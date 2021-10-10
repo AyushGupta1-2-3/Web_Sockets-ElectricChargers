@@ -1,0 +1,84 @@
+<html>
+    <head>
+        <style>
+            input, button { padding: 10px; }
+        </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script src="index.js"></script>
+
+    </head>
+    <body>
+    	<form action="">
+		  <label for="vendor">Vendor:</label><br>
+		  <input type="text" id="vendor" name="vendor" value="vendor"><br>
+		  
+		  <label for="model">Model:</label><br>
+		  <input type="text" id="model" name="model" value="model"><br><br>
+		
+		  <br><br>
+		</form> 
+        
+       
+        <br><br>
+	<button onclick="startDevice()">Start Device</button>
+	<div class="logs" id="logs"></div>
+
+    
+    <script>
+        const $logs = document.getElementById('logs');
+        function addLog(log, color = 'gray') {
+            let div = document.createElement('div');
+            div.textContent = log;
+            div.className = color;
+            $logs.appendChild(div);
+            window.scrollTo(0, 100000);
+        }
+    </script>
+
+   
+        <script>
+            // Create a new WebSocket.
+            //static token management
+            var socket  = new WebSocket('ws://34.131.3.166:80?id=10&token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.WSAs_qh3A0UU-WwcxZwVYgOFzVhs1jqkZEBYMYsInm4');
+
+            function getRandomID(){
+			const clientID = [...crypto.getRandomValues(new Uint8Array(20))].map(m=>('0'+m.toString(16)).slice(-2)).join('');
+			return clientID;
+		}
+	
+	     function startDevice() {
+			
+		//$boot_msg="[ 2,"D8a90el1-7a51-4eel","BootNotification",{"chargePointVendor":"BTCPower","chargePointModel":"Slim 208"}]";
+				var vendor = document.getElementById('vendor').value;
+            	var model = document.getElementById('model').value;
+            	
+				alert("Device started");
+				
+				clientID = getRandomID();
+				socket.send('[ 2,"'+clientID.toString()+'","BootNotification",{"chargePointVendor":"'+ vendor +'","chargePointModel":"' + model +'"}]');
+
+				//socket.send('[ 2,"D8a90el1-7a51-4eel","BootNotification",{"chargePointVendor":"BTCPower","chargePointModel":"Slim 208"}]');
+
+		    	socket.onmessage = function(e) {
+		        alert( e.data );
+		    clientID = getRandomID();	
+			setTimeout(function(){socket.send('[ 2,"'+clientID.toString()+'","HeartBeat"]');},5000);
+
+		    }
+
+			
+
+		}
+		
+		function randomID(){
+			const clientID = [...crypto.getRandomValues(new Uint8Array(20))].map(m=>('0'+m.toString(16)).slice(-2)).join('');
+			return clientID;
+		}
+
+        </script>
+    </body>
+</html>
